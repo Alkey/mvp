@@ -13,23 +13,21 @@ public class PlayerStatisticConverterImpl implements PlayerStatisticConverter {
 
     @Override
     public List<PlayerStatistic> convert(List<String[]> match) {
-        if (isBasketball(match)) {
-            return basketballMatchConverter.convert(match);
-        } else if (isHandball(match)) {
-            return handballMatchConverter.convert(match);
+        if (match.size() > 0 && match.get(0).length == 1) {
+            if (isBasketball(match)) {
+                return basketballMatchConverter.convert(match);
+            } else if (isHandball(match)) {
+                return handballMatchConverter.convert(match);
+            }
         }
         throw new RuntimeException("Unknown sport");
     }
 
     private boolean isBasketball(List<String[]> read) {
-        return read.size() > 0
-                && read.get(0).length == 1
-                && read.get(0)[0].equals("BASKETBALL");
+        return read.get(0)[0].equals("BASKETBALL");
     }
 
     private boolean isHandball(List<String[]> read) {
-        return read.size() > 0
-                && read.get(0).length == 1
-                && read.get(0)[0].equals("HANDBALL");
+        return read.get(0)[0].equals("HANDBALL");
     }
 }

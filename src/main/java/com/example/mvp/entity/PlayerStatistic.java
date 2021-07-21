@@ -1,13 +1,15 @@
 package com.example.mvp.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
 public abstract class PlayerStatistic {
-    private String playerName;
-    private String nickname;
-    private int number;
-    private String teamName;
+    private final String playerName;
+    private final String nickname;
+    private final int number;
+    private final String teamName;
+
+    public abstract int countPoints();
 }

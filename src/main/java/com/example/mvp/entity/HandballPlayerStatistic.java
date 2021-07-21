@@ -1,6 +1,5 @@
 package com.example.mvp.entity;
 
-
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -16,5 +15,10 @@ public class HandballPlayerStatistic extends PlayerStatistic {
         super(playerName, nickname, number, teamName);
         this.goalsMade = goalsMade;
         this.goalsReceived = goalsReceived;
+    }
+
+    @Override
+    public int countPoints() {
+        return goalsMade * 2 - goalsReceived;
     }
 }
