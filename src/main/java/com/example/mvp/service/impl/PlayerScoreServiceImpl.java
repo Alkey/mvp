@@ -19,10 +19,9 @@ public class PlayerScoreServiceImpl implements PlayerScoreService {
             throw new RuntimeException("One player may play in different teams and positions in different games, but not in the same game.");
         }
         String winnerTeam = getWinnerTeam(teamResult);
-        List<Player> players = playerStatistics.stream()
-                .map(this::getPlayer)
+        return playerStatistics.stream()
+                .map(playerStatistic -> getPlayer(playerStatistic, winnerTeam))
                 .collect(Collectors.toList());
-        return addPointsIfTeamWin(players, winnerTeam);
     }
 
     private String getWinnerTeam(Map<String, Integer> teamResult) {
@@ -33,22 +32,11 @@ public class PlayerScoreServiceImpl implements PlayerScoreService {
                 .orElseThrow();
     }
 
-    private Player getPlayer(PlayerStatistic playerStatistic) {
-        Player player = new Player();
-        player.setNickName(playerStatistic.getNickname());
-        player.setTeam(playerStatistic.getTeamName());
-        player.setScore(playerStatistic.countPoints());
-        return player;
-    }
-
-    private List<Player> addPointsIfTeamWin(List<Player> players, String team) {
-        for (Player player : players) {
-            if (player.getTeam().equals(team)) {
-                int score = player.getScore() + 10;
-                player.setScore(score);
-            }
+    private Player getPlayer(PlayerStatistic playerStatistic, String winnerTeam) {
+        if (playerStatistic.getTeamName().equals(winnerTeam)) {
+            return new Player(playerStatistic.getNickname(), playerStatistic.getTeamName(), playerStatistic.countPoints() + 10);
         }
-        return players;
+        return new Player(playerStatistic.getNickname(), playerStatistic.getTeamName(), playerStatistic.countPoints());
     }
 
     private long countPlayers(List<PlayerStatistic> playerStatistics) {

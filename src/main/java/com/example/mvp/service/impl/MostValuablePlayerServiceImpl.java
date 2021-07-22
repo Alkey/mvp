@@ -1,11 +1,11 @@
 package com.example.mvp.service.impl;
 
-import com.example.mvp.converter.impl.PlayerStatisticConverterImpl;
+import com.example.mvp.converter.PlayerStatisticConverterFactory;
 import com.example.mvp.entity.Player;
+import com.example.mvp.entity.PlayerStatistic;
 import com.example.mvp.service.MostValuablePlayerService;
 import lombok.RequiredArgsConstructor;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,12 +15,12 @@ import static java.util.Map.Entry.comparingByValue;
 
 @RequiredArgsConstructor
 public class MostValuablePlayerServiceImpl implements MostValuablePlayerService {
-    private final PlayerStatisticConverterImpl converter;
+    private final PlayerStatisticConverterFactory converterFactory;
     private final PlayerScoreServiceImpl service;
 
-    public String calculateMostValuablePlayer(List<String> paths) throws IOException {
+    public String calculateMostValuablePlayer(List<String> paths) {
         List<Player> players = paths.stream()
-                .map(path -> converter.convert(read(path)))
+                .map(path -> getPlayerStatistics(read(path)))
                 .map(service::countPLayersScore)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
@@ -35,5 +35,12 @@ public class MostValuablePlayerServiceImpl implements MostValuablePlayerService 
                 .max(comparingByValue())
                 .map(e -> e.getKey() + " " + e.getValue())
                 .orElseThrow(() -> new RuntimeException("Can't get most valuable player"));
+    }
+
+    private List<PlayerStatistic> getPlayerStatistics(List<String[]> match) {
+        if (match.size() > 0 && match.get(0).length == 1) {
+            return converterFactory.get(match.get(0)[0]).convert(match);
+        }
+        throw new RuntimeException("Unknown sport");
     }
 }

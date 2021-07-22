@@ -1,10 +1,10 @@
 package com.example.mvp.entity;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class Player {
-    private String nickName;
-    private String team;
-    private int score;
+    String nickName;
+    String team;
+    int score;
 }
