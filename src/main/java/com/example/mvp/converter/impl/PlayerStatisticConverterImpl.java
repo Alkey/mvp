@@ -2,32 +2,26 @@ package com.example.mvp.converter.impl;
 
 import com.example.mvp.converter.PlayerStatisticConverter;
 import com.example.mvp.entity.PlayerStatistic;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-@RequiredArgsConstructor
 public class PlayerStatisticConverterImpl implements PlayerStatisticConverter {
-    private final BasketballPlayerStatisticConverterImpl basketballMatchConverter;
-    private final HandballPlayerStatisticConverterImpl handballMatchConverter;
+    private final Map<String, Function<List<String[]>, List<PlayerStatistic>>> converters;
+
+    public PlayerStatisticConverterImpl(BasketballPlayerStatisticConverterImpl basketballMatchConverter,
+                                        HandballPlayerStatisticConverterImpl handballMatchConverter) {
+        this.converters = Map.of("BASKETBALL", basketballMatchConverter::convert,
+                "HANDBALL", handballMatchConverter::convert);
+    }
 
     @Override
     public List<PlayerStatistic> convert(List<String[]> match) {
         if (match.size() > 0 && match.get(0).length == 1) {
-            if (isBasketball(match)) {
-                return basketballMatchConverter.convert(match);
-            } else if (isHandball(match)) {
-                return handballMatchConverter.convert(match);
-            }
+            String sportType = match.get(0)[0];
+            return converters.get(sportType).apply(match);
         }
         throw new RuntimeException("Unknown sport");
-    }
-
-    private boolean isBasketball(List<String[]> read) {
-        return read.get(0)[0].equals("BASKETBALL");
-    }
-
-    private boolean isHandball(List<String[]> read) {
-        return read.get(0)[0].equals("HANDBALL");
     }
 }
